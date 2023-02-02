@@ -9,6 +9,7 @@ namespace CarRentingSystem.Data
         public CarRentingDbContext(DbContextOptions<CarRentingDbContext> options)
             : base(options)
         {
+            
         }
 
         public DbSet<Category> Categories { get; set; }

@@ -3,6 +3,7 @@
     using CarRentingSystem.Data;
     using CarRentingSystem.Data.Models;
     using CarRentingSystem.Models.Cars;
+    using CarRentingSystem.Models.Home;
     using Microsoft.AspNetCore.Mvc;
 
     public class CarsController : Controller
@@ -14,10 +15,59 @@
             this.data = data;
         }
 
-        public IActionResult Add() => View(new AddCarFormModel
+        public IActionResult All([FromQuery]AllCarsQueryModel query)
         {
-            Categories = this.GetCarCategories()
-        });
+            var carsQuery = this.data.Cars.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.Brand))
+            {
+                carsQuery = carsQuery
+                    .Where(c => c.Brand == query.Brand);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                carsQuery = carsQuery.Where(c =>
+                (c.Brand + " " + c.Model).ToLower().Contains(query.SearchTerm.ToLower())
+                || c.Description.ToLower().Contains(query.SearchTerm.ToLower()));
+            }
+
+            carsQuery = query.Sorting switch
+            {
+                CarSorting.Year => carsQuery.OrderByDescending((c) => c.Year),
+                CarSorting.BrandAndModel => carsQuery.OrderBy(c => c.Brand).ThenBy(c => c.Model),
+                CarSorting.DateCreated or _ => carsQuery.OrderByDescending(c => c.Id)
+            };
+
+            var totalCars = carsQuery.Count();
+
+            var cars = carsQuery
+                .Skip((query.CurrentPage - 1) * AllCarsQueryModel.CarsPerPage)
+                .Take(AllCarsQueryModel.CarsPerPage)
+                .Select(c => new CarListingViewModel
+                {
+                    Id = c.Id,
+                    Brand = c.Brand,
+                    Model = c.Model,
+                    ImageUrl = c.ImageUrl,
+                    Year = c.Year,
+                    Category = c.Category.Name
+                })
+                .ToList();
+
+            var carBrands = this.data
+                .Cars
+                .Select(c => c.Brand)
+                .Distinct()
+                .OrderBy(br => br)
+                .ToList();
+
+            query.Brands = carBrands;
+            query.Cars = cars;
+            query.TotalCars = totalCars;
+
+            return View(query);
+        }
 
         [HttpPost]
         public IActionResult Add(AddCarFormModel car)
@@ -47,8 +97,12 @@
             this.data.Cars.Add(carData);
             this.data.SaveChanges();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(All));
         }
+        public IActionResult Add() => View(new AddCarFormModel
+        {
+            Categories = this.GetCarCategories()
+        });
 
         private IEnumerable<CarCategoryViewModel> GetCarCategories()
             => this.data
