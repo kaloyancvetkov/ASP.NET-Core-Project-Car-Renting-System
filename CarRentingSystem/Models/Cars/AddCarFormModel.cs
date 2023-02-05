@@ -1,20 +1,20 @@
 ﻿namespace CarRentingSystem.Models.Cars
 {
     using System.ComponentModel.DataAnnotations;
-    using static CarRentingSystem.Data.DataConstants;
+    using static CarRentingSystem.Data.DataConstants.Car;
 
     public class AddCarFormModel
     {
         [Required]
-        [StringLength(CarBrandMaxLength, MinimumLength = CarBrandMinLength)]
+        [StringLength(BrandMaxLength, MinimumLength = BrandMinLength)]
         public string Brand { get; init; }
 
         [Required]
-        [StringLength(CarModelMaxLength, MinimumLength = CarModelMinLength)]
+        [StringLength(ModelMaxLength, MinimumLength = ModelMinLength)]
         public string Model { get; init; }
         
         [Required]
-        [StringLength(int.MaxValue, MinimumLength = CarDescriptionMinLength, ErrorMessage = "The field Description must be a string with a minimum length of {2}.")]
+        [StringLength(int.MaxValue, MinimumLength = DescriptionMinLength, ErrorMessage = "The field Description must be a string with a minimum length of {2}.")]
         public string Description { get; init; }
 
         [Required]
@@ -23,7 +23,7 @@
         public string ImageUrl { get; init; }
 
         [Required]
-        [Range(CarYearMinValue,CarYearMaxValue)]
+        [Range(YearMinValue,YearMaxValue)]
         public int Year { get; init; }
 
         [Display(Name = "Category")]
