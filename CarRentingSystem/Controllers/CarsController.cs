@@ -3,8 +3,9 @@
     using CarRentingSystem.Data;
     using CarRentingSystem.Data.Models;
     using CarRentingSystem.Models.Cars;
-    using CarRentingSystem.Models.Home;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using static Infrastructure.ClaimsPrincipalExtensions;
 
     public class CarsController : Controller
     {
@@ -69,9 +70,40 @@
             return View(query);
         }
 
+        [Authorize]
+        public IActionResult Add() 
+        {
+            if (!this.UserIsDealer())
+            {
+                return RedirectToAction(nameof(DealersController.Become), "Dealers");
+            }
+
+            return View(new AddCarFormModel
+            {
+                Categories = this.GetCarCategories()
+            });
+        }
+
         [HttpPost]
+        [Authorize]
         public IActionResult Add(AddCarFormModel car)
         {
+            var dealerId = this.data
+                .Dealers
+                .Where(d => d.UserId == this.User.GetId())
+                .Select(d => d.Id)
+                .FirstOrDefault();
+
+            if (dealerId == 0)
+            {
+                return RedirectToAction(nameof(DealersController.Become), "Dealers");
+            }
+
+            if (!this.UserIsDealer())
+            {
+                return RedirectToAction(nameof(DealersController.Become), "Dealers");
+            }
+
             if (!this.data.Categories.Any(c => c.Id == car.CategoryId))
             {
                 this.ModelState.AddModelError(nameof(car.CategoryId), "Category doesn't exist.");
@@ -91,7 +123,8 @@
                 Description = car.Description,
                 ImageUrl = car.ImageUrl,
                 Year = car.Year,
-                CategoryId = car.CategoryId
+                CategoryId = car.CategoryId,
+                DealerId = dealerId,
             };
 
             this.data.Cars.Add(carData);
@@ -99,10 +132,11 @@
 
             return RedirectToAction(nameof(All));
         }
-        public IActionResult Add() => View(new AddCarFormModel
-        {
-            Categories = this.GetCarCategories()
-        });
+
+        private bool UserIsDealer()
+            => this.data
+                .Dealers
+                .Any(d => d.UserId == this.User.GetId());
 
         private IEnumerable<CarCategoryViewModel> GetCarCategories()
             => this.data

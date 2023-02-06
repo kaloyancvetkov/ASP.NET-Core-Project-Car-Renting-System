@@ -1,7 +1,7 @@
 ﻿@model AllCarsQueryModel
 
 @{
-    ViewData["Title"] = "All Cars";
+    ViewBag.Title = "All Cars";
 }
 
 <form method="get">
@@ -37,6 +37,8 @@
 
     </div>
 </form>
+
+
 
 @{
     var totalCars = Model.TotalCars;
@@ -84,3 +86,9 @@
         </div>
     }
 </div>
+
+@if (!Model.Cars.Any())
+{
+
+    <h2 class="text-center">No cars found by the given criteria!</h2>
+}
