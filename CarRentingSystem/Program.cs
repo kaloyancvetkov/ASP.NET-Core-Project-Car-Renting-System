@@ -1,6 +1,9 @@
 using CarRentingSystem.Data;
 using CarRentingSystem.Infrastructure;
+using CarRentingSystem.Services.Cars;
+using CarRentingSystem.Services.Statistics;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +26,8 @@ builder.Services
     .AddEntityFrameworkStores<CarRentingDbContext>();
 
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddTransient<IStatisticsService, StatisticsService>();
+builder.Services.AddTransient<ICarService, CarService>();
 
 var app = builder.Build();
 
@@ -50,7 +54,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-
 app.Run();
-
-

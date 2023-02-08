@@ -1,24 +1,25 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace CarRentingSystem.Models.Cars
+﻿namespace CarRentingSystem.Models.Cars
 {
+    using CarRentingSystem.Services.Cars;
+    using System.ComponentModel.DataAnnotations;
+
     public class AllCarsQueryModel
     {
         public const int CarsPerPage = 3;
 
         public string Brand { get; init; }
 
-        public IEnumerable<string> Brands { get; set; }
-
-        [Display(Name = "Search by text:")]
+        [Display(Name = "Search by text")]
         public string SearchTerm { get; init; }
 
         public CarSorting Sorting { get; init; }
 
-        public int TotalCars { get; set; }
-
         public int CurrentPage { get; init; } = 1;
 
-        public IEnumerable<CarListingViewModel> Cars { get; set; }
+        public int TotalCars { get; set; }
+
+        public IEnumerable<string> Brands { get; set; }
+
+        public IEnumerable<CarServiceModel> Cars { get; set; }
     }
 }
