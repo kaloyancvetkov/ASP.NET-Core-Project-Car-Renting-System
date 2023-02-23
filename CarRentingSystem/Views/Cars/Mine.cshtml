@@ -1,0 +1,14 @@
+﻿@model IEnumerable<CarServiceModel>
+
+@{
+    ViewBag.Title = "All Cars";
+    ViewBag.AllowCarEdit = true;
+}
+
+@if (!Model.Any())
+{
+
+    <h2 class="text-center">You don't have any cars yet.</h2>
+}
+
+<partial name="_CarsPartial" model="@Model" />
