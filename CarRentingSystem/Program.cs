@@ -1,4 +1,5 @@
 using CarRentingSystem.Data;
+using CarRentingSystem.Data.Models;
 using CarRentingSystem.Infrastructure;
 using CarRentingSystem.Services.Cars;
 using CarRentingSystem.Services.Dealers;
@@ -10,6 +11,10 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<CarRentingDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
 builder
     .Services.AddDbContext<CarRentingDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -17,13 +22,14 @@ builder
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services
-    .AddDefaultIdentity<IdentityUser>(options => 
+    .AddDefaultIdentity<User>(options => 
     {
         options.Password.RequireDigit = false;
         options.Password.RequireUppercase= false;
         options.Password.RequireLowercase = false;
         options.Password.RequireNonAlphanumeric = false;
     })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<CarRentingDbContext>();
 
 builder.Services.AddControllersWithViews(options =>
@@ -60,5 +66,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+app.UseAuthentication();;
 
 app.Run();
