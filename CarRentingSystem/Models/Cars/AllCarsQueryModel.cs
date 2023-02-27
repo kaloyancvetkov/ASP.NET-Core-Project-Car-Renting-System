@@ -1,6 +1,6 @@
 ﻿namespace CarRentingSystem.Models.Cars
 {
-    using CarRentingSystem.Services.Cars;
+    using CarRentingSystem.Services.Cars.Models;
     using System.ComponentModel.DataAnnotations;
 
     public class AllCarsQueryModel

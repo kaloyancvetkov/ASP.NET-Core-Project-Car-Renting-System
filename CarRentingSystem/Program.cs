@@ -32,6 +32,8 @@ builder.Services
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<CarRentingDbContext>();
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
@@ -65,9 +67,8 @@ app.UseHttpsRedirection()
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapControllerRoute(
-    name: "Areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+app.MapDefaultAreaRoute();
+
 app.MapRazorPages();
 app.UseAuthentication();;
 
