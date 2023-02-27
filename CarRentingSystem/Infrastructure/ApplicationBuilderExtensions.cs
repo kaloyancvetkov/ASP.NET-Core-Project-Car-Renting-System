@@ -5,7 +5,7 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
-    using static WebConstants;
+    using static Areas.Admin.AdminConstants;
 
     public static class ApplicationBuilderExtensions
     {
